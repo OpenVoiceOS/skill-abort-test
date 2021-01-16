@@ -7,6 +7,7 @@ class Test(MycroftSkill):
     """
     send "mycroft.skills.abort_question" and confirm only get_response is aborted
     send "mycroft.skills.abort_execution" and confirm the full intent is aborted
+    say "stop" and confirm intents are aborted
     """
     def handle_intent_aborted(self):
         self.speak("I am dead")
