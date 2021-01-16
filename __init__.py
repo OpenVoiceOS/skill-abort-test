@@ -5,7 +5,7 @@ from time import sleep
 
 class Test(MycroftSkill):
     """
-    send "mycroft.skills.abort_question" and confirm get_response is aborted
+    send "mycroft.skills.abort_question" and confirm only get_response is aborted
     send "mycroft.skills.abort_execution" and confirm the full intent is aborted
     """
     def handle_intent_aborted(self):
@@ -19,9 +19,12 @@ class Test(MycroftSkill):
             self.speak("still here")
 
     @intent_file_handler("test2.intent")
+    @killable_intent(callback=handle_intent_aborted)
     def handle_test_get_response_intent(self, message):
-        self.get_response("question", num_retries=9999)
-        self.speak("question aborted")
+        ans = self.get_response("question", num_retries=99999)
+        self.log.debug("get_response returned: " + str(ans))
+        if ans is None:
+            self.speak("question aborted")
 
 
 def create_skill():
