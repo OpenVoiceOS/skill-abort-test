@@ -10,12 +10,20 @@ class Test(MycroftSkill):
     send "my.own.abort.msg" and confirm intent3 is aborted
     say "stop" and confirm all intents are aborted
     """
+    def __init__(self):
+        self.my_special_var = "default"
+
     def handle_intent_aborted(self):
         self.speak("I am dead")
+        # handle any cleanup the skill might need, since intent was killed
+        # at an arbitrary place of code execution some variables etc. might
+        # end up in unexpected states
+        self.my_special_var = "default"
 
     @killable_intent(callback=handle_intent_aborted)
     @intent_file_handler("test.intent")
     def handle_test_abort_intent(self, message):
+        self.my_special_var = "changed"
         while True:
             sleep(1)
             self.speak("still here")
@@ -23,6 +31,7 @@ class Test(MycroftSkill):
     @intent_file_handler("test2.intent")
     @killable_intent(callback=handle_intent_aborted)
     def handle_test_get_response_intent(self, message):
+        self.my_special_var = "CHANGED"
         ans = self.get_response("question", num_retries=99999)
         self.log.debug("get_response returned: " + str(ans))
         if ans is None:
@@ -31,6 +40,8 @@ class Test(MycroftSkill):
     @killable_intent(msg="my.own.abort.msg", callback=handle_intent_aborted)
     @intent_file_handler("test3.intent")
     def handle_test_msg_intent(self, message):
+        if self.my_special_var != "default":
+            self.speak("someone forgot to cleanup")
         while True:
             sleep(1)
             self.speak("you can't abort me")
