@@ -11,6 +11,7 @@ class Test(MycroftSkill):
     say "stop" and confirm all intents are aborted
     """
     def __init__(self):
+        super(Test, self).__init__("KillableSkill")
         self.my_special_var = "default"
 
     def handle_intent_aborted(self):
